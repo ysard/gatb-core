@@ -1,0 +1,20 @@
+# You can run the "uscan" command
+# to check for upstream updates and more.
+# See uscan(1) for format
+
+# Compulsory line, this is a version 3 file
+version=3
+
+# Uncomment to examine a Webpage
+# <Webpage URL> <string match>
+https://github.com/GATB/gatb-core/releases v(.*)\.tar\.gz
+# https://github.com/GATB/gatb-core/archive/v1.3.0.tar.gz
+
+# Uncommment to examine a FTP server
+#ftp://ftp.example.com/pub/gatb-core-(.*)\.tar\.gz debian uupdate
+
+# Uncomment to find new files on sourceforge, for devscripts >= 2.9
+# http://sf.net/gatb-core/gatb-core-(.*)\.tar\.gz
+
+# Uncomment to find new files on GooglePages
+# http://example.googlepages.com/foo.html gatb-core-(.*)\.tar\.gz

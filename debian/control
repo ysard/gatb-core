@@ -1,0 +1,62 @@
+Source: libgatbcore0
+Priority: optional
+Maintainer: Pierre Vignet <pierre.vignet.contact@caramail.fr>
+Build-Depends: dh-exec (>=0.3), debhelper (>= 9)
+Standards-Version: 3.9.5
+Section: libs
+Homepage: https://github.com/GATB/gatb-core
+#Vcs-Git: git://anonscm.debian.org/collab-maint/libgatbcore.git
+#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/libgatbcore.git;a=summary
+
+Package: libgatbcore0-dev
+Section: libdevel
+Architecture: any
+Depends: libgatbcore0 (= ${binary:Version}), ${misc:Depends}
+Description: Header files and a static library for GATB
+ Genome Analysis Toolbox with de-Bruijn graph (GATB)
+ provides a set of highly efficient algorithms to analyse NGS data sets.
+ These methods enable the analysis of data sets of any size on multi-core
+ desktop computers, including very huge amount of reads data coming from any
+ kind of organisms such as bacteria, plants, animals and even complex samples
+ (e.g. metagenomes). Read more about GATB at https://gatb.inria.fr/.
+ .
+ This package contains development libraries, header files, and manpages for
+ GATB-CORE. It allows its embedding in applications.
+
+Package: libgatbcore0
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: gatbcore-tools
+Description: Shared GATB runtime library
+ Genome Analysis Toolbox with de-Bruijn graph (GATB)
+ provides a set of highly efficient algorithms to analyse NGS data sets.
+ These methods enable the analysis of data sets of any size on multi-core
+ desktop computers, including very huge amount of reads data coming from any
+ kind of organisms such as bacteria, plants, animals and even complex samples
+ (e.g. metagenomes). Read more about GATB at https://gatb.inria.fr/.
+ .
+ This package contains only the shared runtime stub libraries.
+ 
+Package: gatbcore-tools
+Architecture: any
+Depends: libgatbcore0, ${shlibs:Depends}, ${misc:Depends}
+Replaces: leon
+Conflicts: leon
+Description: GATB library tools (utilities)
+ Genome Analysis Toolbox with de-Bruijn graph (GATB).
+ .
+ This package contains:
+ * dbginfo : to get information about a graph stored in a .h5 file
+ .
+ * dbgh5 : to build a graph from read set(s) and obtain a .h5 file
+ .
+ * gatb-h5dump : to extract all data stored in a .h5 file
+ .
+ * leon : a software to compress Next Generation Sequencing data.
+ It can compress Fasta or Fastq format. The method does not require
+ any reference genome, instead a reference is built de novo from the set
+ of reads as a probabilist de Bruijn Graph. It uses the disk streaming k-mer
+ counting algorithm contained in the GATB library, and inserts solid k-mers
+ in a bloom-filter. Each read is then encoded as a path in this graph, storing
+ only an anchoring kmer and a list of bifurcations indicating which path to
+ follow in the graph if several are possible.

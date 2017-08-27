@@ -1,0 +1,44 @@
+libgatbcore0 for Debian
+-----------------------
+
+ -- Pierre Vignet <pierre.vignet.contact@caramail.fr>  Mon, 10 Jul 2017 23:40:17 +0200
+
+    This file describes information about the source package.
+
+    Some modifications are made on upstream sources. You will find these modifications
+    (applied in order at build time):
+
+        - Correction of the required CMake version.
+        Since Debian Jessie uses CMake 3.0.2 and that there is no strict justification
+        for the use of 3.1.0; appart from a requirement of hdf5 that is documented in a patch file.
+
+        - Fix linker settings to force the full inclusion of hdf5, pthread, libz symbols in libgatbcore.
+        Without that, the linker flag -Wl,-z,defs (specified in debian/rules file) will stop the
+        compilation, avoiding problems at runtime.
+
+        - Add a full SONAME to the library.
+        Here it is the version 0 of the API.
+
+        - Add the rules to compile libgatbcore in shared AND static versions.
+
+
+    All these modifications are stored in debian/patches directory.
+    You will be advised to learn how to use quilt (from quilt or from devscripts packages) to easy use them.
+
+    Quilt documentation:
+        https://www.debian.org/doc/manuals/maint-guide/modify.fr.html#quiltrc
+        https://man.cx/quilt
+
+    Basically, if you want to apply all patches:
+        $ quilt push -a
+
+    And if you wan to remove all patches so that the source returns to downloaded state:
+        $ quilt pop -a
+
+
+    Note:
+        The compilation settings are in debian/rules file.
+        All C++ and C code is compiled with -O3 flag with most of hardening options disabled.
+
+    About tests:
+        Currently tests are not made.

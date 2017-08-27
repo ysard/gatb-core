@@ -1,0 +1,4 @@
+# dbgh5 & dbginfo
+usr/bin/dbg*
+usr/bin/gatb-h5dump
+usr/bin/leon

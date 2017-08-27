@@ -1,0 +1,29 @@
+libgatbcore0 (1.3.0-1.1) UNRELEASED; urgency=medium
+
+  * Non-maintainer upload.
+
+  * Correction of the required CMake version.
+  Since Debian Jessie uses CMake 3.0.2 and that there is no strict justification
+  for the use of 3.1.0; appart from a requirement of hdf5 that is documented in
+  a patch file.
+
+  * Fix linker settings to force the full inclusion of hdf5, pthread, libz
+  symbols in libgatbcore.
+  Without that, the linker flag -Wl,-z,defs (specified in debian/rules file)
+  will stop the compilation, avoiding problems at runtime.
+
+  * Add a full SONAME to the library.
+  Here it is the version 0 of the API.
+
+  * Add the rules to compile libgatbcore in shared AND static versions.
+  
+  * Tools are compiled with dynamic version of the lib (and with -flto flag).
+  gatb-h5dump is still linked with static hdhf5 lib (like libgatbcore).
+
+ -- Pierre Vignet <pierre.vignet.contact@caramail.fr>  Tue, 11 Jul 2017 22:11:27 +0200
+
+libgatbcore0 (1.3.0-1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- Pierre Vignet <pierre.vignet.contact@caramail.fr>  Mon, 10 Jul 2017 23:40:17 +0200

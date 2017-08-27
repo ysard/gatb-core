@@ -1,0 +1,74 @@
+Description: Rollback to CMake version 3.0.2
+ <long description that can span multiple lines, optional>
+Author: <name and email of author, optional>
+Origin: <upstream|backport|vendor|other>, <URL, required except if Author is present>
+Bug: <URL to the upstream bug report if any, implies patch has been forwarded, optional>
+Bug-<Vendor>: <URL to the vendor bug report if any, optional>
+Forwarded: <URL|no|not-needed, useless if you have a Bug field, optional>
+Applied-Upstream: <version|URL|commit, identifies patches merged upstream, optional>
+Reviewed-by: <name and email of a reviewer, optional>
+Last-Update: <YYYY-MM-DD, last update of the meta-information, optional>
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/gatb-core/thirdparty/hdf5/CMakeInstallation.cmake
++++ b/gatb-core/thirdparty/hdf5/CMakeInstallation.cmake
+@@ -73,7 +73,7 @@
+     "${HDF5_BINARY_DIR}/${HDF5_PACKAGE}${HDF_PACKAGE_EXT}-config.cmake"
+     INSTALL_DESTINATION "${HDF5_INSTALL_CMAKE_DIR}"
+     PATH_VARS INCLUDE_INSTALL_DIR SHARE_INSTALL_DIR CURRENT_BUILD_DIR
+-    INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}"
++    #INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}" # Deactivated on cmake 3.0.2
+ )
+ 
+ #-----------------------------------------------------------------------------
+--- a/gatb-core/thirdparty/hdf5/CMakeLists.txt
++++ b/gatb-core/thirdparty/hdf5/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required (VERSION 3.1.0)
++cmake_minimum_required (VERSION 3.0.2)
+ PROJECT (HDF5 C CXX)
+ 
+ #-----------------------------------------------------------------------------
+--- a/gatb-core/thirdparty/hdf5/src/CMakeLists.txt
++++ b/gatb-core/thirdparty/hdf5/src/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required (VERSION 3.1.0)
++cmake_minimum_required (VERSION 3.0.2)
+ PROJECT (HDF5_SRC C CXX)
+ 
+ #-----------------------------------------------------------------------------
+--- a/gatb-core/thirdparty/hdf5/tools/CMakeLists.txt
++++ b/gatb-core/thirdparty/hdf5/tools/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required (VERSION 3.1.0)
++cmake_minimum_required (VERSION 3.0.2)
+ PROJECT (HDF5_TOOLS)
+ 
+ #-----------------------------------------------------------------------------
+--- a/gatb-core/thirdparty/hdf5/tools/h5dump/CMakeLists.txt
++++ b/gatb-core/thirdparty/hdf5/tools/h5dump/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required (VERSION 3.1.0)
++cmake_minimum_required (VERSION 3.0.2)
+ PROJECT (HDF5_TOOLS_H5DUMP)
+ 
+ #-----------------------------------------------------------------------------
+--- a/gatb-core/thirdparty/hdf5/tools/lib/CMakeLists.txt
++++ b/gatb-core/thirdparty/hdf5/tools/lib/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required (VERSION 3.1.0)
++cmake_minimum_required (VERSION 3.0.2)
+ PROJECT (HDF5_TOOLS_LIB)
+ 
+ #-----------------------------------------------------------------------------
+--- a/gatb-core/CMakeLists.txt
++++ b/gatb-core/CMakeLists.txt
+@@ -1,7 +1,7 @@
+ project(gatb-core)
+ 
+ # We set the required version
+-cmake_minimum_required (VERSION 3.1.0)
++cmake_minimum_required (VERSION 3.0.2)
+ 
+ ################################################################################
+ # The version number.

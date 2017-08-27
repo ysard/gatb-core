@@ -1,0 +1,5 @@
+cmake_version_correction.patch
+fix_forgotten_linker_flags.patch
+build_static_and_dynamic_lib.patch
+add_cmake_package_config_files.patch
+fix_tools_compilation_against_gatb_dynamic.patch

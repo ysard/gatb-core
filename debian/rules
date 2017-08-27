@@ -1,0 +1,78 @@
+#!/usr/bin/make -f
+# See debhelper(7) (uncomment to enable)
+# output every command that modifies files on the build system.
+DH_VERBOSE = 1
+
+# see EXAMPLES in dpkg-buildflags(1) and read /usr/share/dpkg/*
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/default.mk
+
+# Tweak flags brought by dpkg-buildflags
+# see ENVIRONMENT in dpkg-buildflags(1)
+# package maintainers to strip CFLAGS CXXFLAGS CPPFLAGS
+export DEB_CFLAGS_MAINT_STRIP = -g -O2
+export DEB_CXXFLAGS_MAINT_STRIP = -g -O2
+
+# package maintainers to append CFLAGS CXXFLAGS LDFLAGS
+# PS: No flto on gcc for hdf5 because it is a static lib
+# PS: For static version of libgatbcore the -flto flag raises a warning on object files:
+# "plugin needed to handle lto object"
+# PS: -flto flag is set only for dynamic version in gatb-core/src/CMalelists.txt
+export DEB_CFLAGS_MAINT_APPEND = -O3
+export DEB_CXXFLAGS_MAINT_APPEND = -O3
+# equivalent of modifying CMAKE_SHARED_LINKER_FLAGS
+# Disallows undefined symbols when creating .so files,
+# so that this problem can be caught at compile time rather than runtime.
+# PS: Think about -Wl,--as-needed,--no-allow-shlib-undefined
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,-z,defs -flto
+
+# see FEATURE AREAS in dpkg-buildflags(1)
+# PS: Remove all with: hardening=-all
+# Default flags:
+# CFLAGS=-g -O2 -fstack-protector-strong -Wformat -Werror=format-security
+# CPPFLAGS=-D_FORTIFY_SOURCE=2
+# CXXFLAGS=-g -O2 -fstack-protector-strong -Wformat -Werror=format-security
+# Flags brought by CMakelists.txt
+# -std=c++11 (debug:-g -p/release: -O3 -DNDEBUG) -Wall -Wno-unused-function -Wno-format -Wno-unknown-pragmas -Wno-invalid-offsetof
+export DEB_BUILD_MAINT_OPTIONS=hardening=-fortify,-stackprotector,-format
+
+# Examples of current files & flags
+# /usr/bin/c++ -Dgatbcore_static_EXPORTS -msse2 -msse4.2 -mpopcnt -fPIC -I/media/DATA/Projets/gatb/gatb-core-1.3.0/gatb-core/build/include -I/media/DATA/Projets/gatb/gatb-core-1.3.0/gatb-core/src -I/media/DATA/Projets/gatb/gatb-core-1.3.0/gatb-core/thirdparty    -std=c++11 -O3 -DNDEBUG -Wall -Wno-unused-function -Wno-format -Wno-unknown-pragmas  -DINT128_FOUND -Wno-invalid-offsetof
+
+# usr/bin/c++    -msse2 -msse4.2 -mpopcnt    CMakeFiles/dbgh5.dir/dbgh5.cpp.o  -o ../bin/dbgh5 -rdynamic ../lib/libgatbcore.so -ldl -lpthread -lz ../lib/libhdf5.a -lm -lz -ldl -Wl,-rpath,/media/DATA/Projets/gatb/gatb-core-1.3.0/gatb-core/build/lib
+
+# /usr/bin/cc  -DNDEBUG -D_FILE_OFFSET_BITS=64 -D_GNU_SOURCE -D_LARGEFILE64_SOURCE -D_LARGEFILE_SOURCE -msse2 -msse4.2 -mpopcnt -std=c99 -Wundef -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -Wnested-externs -Winline -fmessage-length=0 -fPIC
+
+# main packaging script based on dh7 syntax
+# $(CURDIR) = /media/DATA/Projets/gatb/gatb-core-1.3.0
+%:
+	dh $@ --sourcedirectory=gatb-core --parallel --builddirectory=build
+
+# debmake generated override targets
+# This is example for Cmake (See http://bugs.debian.org/641051 )
+override_dh_auto_configure:
+	dh_auto_configure -- \
+	-DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH) \
+	-DGATB_CORE_EXCLUDE_TESTS=ON
+# 	-DGATB_CORE_EXCLUDE_TOOLS=ON
+# 	-DCMAKE_BUILD_TYPE=None ? Release/Debug
+
+override_dh_auto_install:
+	# Copy files to debian/tmp
+	dh_auto_install
+	# Suppress empty directories (include/gatb/template)
+	find $(CURDIR)/debian/tmp/ -type d -empty -delete
+	# Merge libgatbcore with libhdf5
+	ar -x debian/tmp/usr/lib/libgatbcore.a
+	ar -x debian/tmp/usr/lib/libhdf5.a
+	rm debian/tmp/usr/lib/libgatbcore.a
+	ar -qcs debian/tmp/usr/lib/libgatbcore.a *.o
+	rm debian/tmp/usr/lib/libhdf5.a
+	rm debian/tmp/usr/lib/libhdf5_tools.a
+	rm *.o
+	# Add CMake package files
+	cp -R $(CURDIR)/build/lib/*/cmake $(CURDIR)/debian/tmp/usr/lib/
+
+override_dh_installchangelogs:
+	# Add upstream changelog
+	dh_installchangelogs $(CURDIR)/gatb-core/RELEASES.md

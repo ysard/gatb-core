@@ -1,0 +1,111 @@
+Description: Add config files for cmake package
+ <long description that can span multiple lines, optional>
+Author: <name and email of author, optional>
+Origin: <upstream|backport|vendor|other>, <URL, required except if Author is present>
+Bug: <URL to the upstream bug report if any, implies patch has been forwarded, optional>
+Bug-<Vendor>: <URL to the vendor bug report if any, optional>
+Forwarded: <URL|no|not-needed, useless if you have a Bug field, optional>
+Applied-Upstream: <version|URL|commit, identifies patches merged upstream, optional>
+Reviewed-by: <name and email of a reviewer, optional>
+Last-Update: <YYYY-MM-DD, last update of the meta-information, optional>
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/gatb-core/CMakeLists.txt
++++ b/gatb-core/CMakeLists.txt
+@@ -10,6 +10,7 @@
+ SET (gatb-core_VERSION_MAJOR 1)
+ SET (gatb-core_VERSION_MINOR 3)
+ SET (gatb-core_VERSION_PATCH 0)
++SET (gatb-core_SONAME 0)
+ 
+ # But, it is possible to define another release number during a local build
+ IF (DEFINED MAJOR)
+@@ -287,6 +288,36 @@
+ ENDIF()
+ 
+ ################################################################################
++# Configuration
++################################################################################
++
++# Config files: <prefix>/lib/cmake/<PACKAGE_NAME>
++# The user can find the lib with: find_package(gatbcore 1.3.0)
++set(PACKAGE_NAME "gatbcore-${gatb-core_SONAME}")
++set(config_install_dir "${LIBRARY_OUTPUT_PATH}/cmake/${PACKAGE_NAME}")
++set(version_config "${config_install_dir}/gatbcore-config-version.cmake")
++set(project_config "${config_install_dir}/gatbcore-config.cmake")
++
++# Create ConfigVersion.cmake with the version of the package
++# Include module with fuction 'write_basic_package_version_file'
++# AnyNewerVersion: packages which are fully backward compatible, also across major versions.
++# SameMajorVersion: packages which guarantee backward compatibility within the same major version.
++# ExactVersion: packages without compatibility guarantees.
++include(CMakePackageConfigHelpers)
++write_basic_package_version_file(
++  ${version_config}
++  VERSION ${gatb-core-version}
++  COMPATIBILITY ExactVersion
++)
++
++# Create config package file with the includes directory,
++# and the localisation of the shared/static lib
++configure_file(${gatb-core-cmake}/config.cmake.in
++  ${project_config}
++  @ONLY
++)
++
++################################################################################
+ #  DELIVERY 
+ ################################################################################
+ SET (CPACK_PACKAGE_DESCRIPTION_SUMMARY  "gatb-core project")
+--- a/gatb-core/src/CMakeLists.txt
++++ b/gatb-core/src/CMakeLists.txt
+@@ -100,7 +100,7 @@
+ set_target_properties (gatbcore-dynamic  PROPERTIES OUTPUT_NAME  gatbcore  clean_direct_output 1
+                                                     COMPILE_FLAGS "${TEMP_CXX_FLAGS} -flto"
+                                                     VERSION "${gatb-core-version}"
+-                                                    SOVERSION "0")
++                                                    SOVERSION "${gatb-core_SONAME}")
+ 
+ ################################################################################
+ #  INSTALLATION 
+--- /dev/null
++++ b/gatb-core/cmake/config.cmake.in
+@@ -0,0 +1,37 @@
++# This file goes to <prefix>/cmake/<PROJECT-NAME>
++# (compute PREFIX relative to file location) is :
++# CMAKE_LIBRARY_PATH
++#
++# These variables are defined and exported
++#     GATBCORE_FOUND        true if the library is found
++#     GATBCORE_INCLUDE_DIRS localisation of the headers
++#     GATBCORE_LIBRARIES    localisation of the shared/static library
++#     GATBCORE_DEFINITIONS  compilation flags of the library
++#     GATBCORE_KLIST        default values for kmer sizes
++#     gatbcore_DIR          location of the package configuration file
++
++# Search Zlib dependency
++include(CMakeFindDependencyMacro)
++find_dependency(ZLIB)
++
++# Includes
++# /usr/include/libgatbcore0/
++find_path(GATBCORE_INCLUDE_DIR gatb/gatb_core.hpp
++          PATH_SUFFIXES libgatbcore@gatb-core_SONAME@)
++# Alternative: Get include directory based on the location of this file
++# get_filename_component(_dir "${CMAKE_CURRENT_LIST_FILE}" PATH)
++# get_filename_component(_prefix "${_dir}/../../.." ABSOLUTE)
++# set(GATBCORE_INCLUDE_DIR "${_prefix}/include/libgatbcore@gatb-core_SONAME@")
++
++# Libraries
++# /usr/lib/x86_64-linux-gnu/libgatbcore.so;z
++find_library(GATBCORE_LIBRARY NAMES gatbcore libgatbcore)
++
++# Definitions
++set(GATBCORE_DEFINITIONS @LIBRARY_COMPILE_DEFINITIONS@)
++
++# Final exported variables
++set(GATBCORE_INCLUDE_DIRS ${GATBCORE_INCLUDE_DIR})
++set(GATBCORE_LIBRARIES ${GATBCORE_LIBRARY} z)
++set(GATBCORE_FOUND TRUE)
++set(GATBCORE_KLIST @gatb-core-klist@)
+\ No newline at end of file

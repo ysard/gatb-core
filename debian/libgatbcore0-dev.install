@@ -1,0 +1,14 @@
+#! /usr/bin/dh-exec
+usr/include/* /usr/include/libgatbcore0
+# No risk to have a conflict with previous libhdf5.a
+# Because we merge it with libgatbcore.a
+# => can directly install in /usr/lib/arch/
+usr/lib/lib*.a /usr/lib/${DEB_HOST_MULTIARCH}
+# We want libgatbcore.so in -dev
+# When the link doesn't include the version number, it is used by the linker
+# when other programs are built against this shared library.
+# Pas censé prendre la lib.so* mais juste le lien lib.so
+usr/lib/lib*.so /usr/lib/${DEB_HOST_MULTIARCH}
+#usr/lib/pkgconfig/* /usr/lib/${DEB_HOST_MULTIARCH}/pkgconfig
+#usr/share/pkgconfig/* /usr/lib/${DEB_HOST_MULTIARCH}/pkgconfig
+usr/lib/cmake/*

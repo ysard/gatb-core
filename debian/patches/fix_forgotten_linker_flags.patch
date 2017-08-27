@@ -1,0 +1,33 @@
+Description: Add linker flags to fullfill symbols.
+ <long description that can span multiple lines, optional>
+Author: <name and email of author, optional>
+Origin: <upstream|backport|vendor|other>, <URL, required except if Author is present>
+Bug: <URL to the upstream bug report if any, implies patch has been forwarded, optional>
+Bug-<Vendor>: <URL to the vendor bug report if any, optional>
+Forwarded: <URL|no|not-needed, useless if you have a Bug field, optional>
+Applied-Upstream: <version|URL|commit, identifies patches merged upstream, optional>
+Reviewed-by: <name and email of a reviewer, optional>
+Last-Update: <YYYY-MM-DD, last update of the meta-information, optional>
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/gatb-core/src/CMakeLists.txt
++++ b/gatb-core/src/CMakeLists.txt
+@@ -86,6 +86,7 @@
+ add_library    (gatbcore-static  STATIC  ${ComponentFiles} )
+ #add_library   (gatbcore-dynamic SHARED  ${ComponentFiles} )
+ 
++target_link_libraries  (gatbcore-static hdf5 z pthread)
+ set_target_properties  (gatbcore-static   PROPERTIES OUTPUT_NAME  gatbcore  clean_direct_output 1)
+ #set_target_properties (gatbcore-dynamic  PROPERTIES OUTPUT_NAME  gatbcore  clean_direct_output 1)
+ 
+--- a/gatb-core/thirdparty/CMakeLists.txt
++++ b/gatb-core/thirdparty/CMakeLists.txt
+@@ -29,7 +29,7 @@
+ ENDIF()
+ 
+ # We don't want warnings from HDF5 compilation
+-set (COMPILE_DEFINITIONS  "${COMPILE_DEFINITIONS}  -w")
++set (COMPILE_DEFINITIONS  "${COMPILE_DEFINITIONS}  -w -lpthread -lz")
+ add_definitions (${COMPILE_DEFINITIONS})
+ 
+ # add HDF5 generation
